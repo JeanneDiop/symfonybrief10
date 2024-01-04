@@ -2,48 +2,74 @@
 
 namespace App\Entity;
 
-use App\Repository\CandidatureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\CandidatureRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CandidatureRepository::class)]
+#[ApiResource]
 class Candidature
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getCandidatures"])]
+
     private ?int $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?formation $formation = null;
+    #[ORM\Column]
+    #[Groups(["getCandidatures"])]
+    private ?bool $statut = null;
+    
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?user $User = null;
+    #[ORM\ManyToOne(inversedBy: 'candidatures')]
+    #[Groups(["getCandidatures"])]
+    private ?User $User = null;
+   
+
+    #[ORM\ManyToOne(inversedBy: 'candidatures')]
+    #[Groups(["getCandidatures"])]
+    private ?Formation $Formation = null;
+    
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getFormation(): ?formation
+    public function isStatut(): ?bool
     {
-        return $this->formation;
+        return $this->statut;
     }
 
-    public function setFormation(?formation $formation): static
+    public function setStatut(bool $statut): static
     {
-        $this->formation = $formation;
+        $this->statut = $statut;
 
         return $this;
     }
 
-    public function getUser(): ?user
+    public function getUser(): ?User
     {
         return $this->User;
     }
 
-    public function setUser(?user $User): static
+    public function setUser(?User $User): static
     {
         $this->User = $User;
+
+        return $this;
+    }
+
+    public function getFormation(): ?Formation
+    {
+        return $this->Formation;
+    }
+
+    public function setFormation(?Formation $Formation): static
+    {
+        $this->Formation = $Formation;
 
         return $this;
     }

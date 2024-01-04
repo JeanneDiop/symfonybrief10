@@ -2,36 +2,65 @@
  
 namespace App\Entity;
  
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use ApiPlatform\Metadata\ApiResource;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["getUsers"])]
     private ?int $id = null;
  
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(["getUsers"])]
     private ?string $email = null;
  
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(["getUsers"])]
     private ?string $username = null;
  
     #[ORM\Column]
-    private array $roles = ['ROLE_USER'];
+    private array $roles = [];
  
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(["getUsers"])]
     private ?string $password = null;
 
-    #[ORM\ManyToOne(inversedBy: 'User')]
-    private ?Formation $user = null;
+    // #[ORM\OneToMany(mappedBy: 'User', targetEntity: Formation::class)]
+    // #[Groups(["getUsers"])]
+    // private Collection $formations;
+
+    #[ORM\OneToMany(mappedBy: 'User', targetEntity: Candidature::class)]
+    #[Groups(["getUsers"])]
+    private Collection $candidatures;
+
+   
+    // #[ORM\OneToMany(mappedBy: 'User_id', targetEntity: Candidature::class)]
+    // private Collection $candidatures;
+
+    public function __construct()
+    {
+        // $this->formations = new ArrayCollection();
+        $this->candidatures = new ArrayCollection();
+       
+    
+    }
+
+    // #[ORM\ManyToOne(inversedBy: 'User')]
+    // private ?Formation $user = null;
  
     public function getId(): ?int
     {
@@ -77,7 +106,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        // $roles = $this->roles;
+        $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[]="ROLE_USER";
         // dump();
@@ -116,15 +145,89 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function getUser(): ?Formation
+    // public function getUser(): ?Formation
+    // {
+    //     return $this->user;
+    // }
+
+    // public function setUser(?Formation $user): static
+    // {
+    //     $this->user = $user;
+
+    //     return $this;
+    // }
+
+    // /**
+    //  * @return Collection<int, Formation>
+    //  */
+    // public function getFormations(): Collection
+    // {
+    //     return $this->formations;
+    // }
+
+    // public function addFormation(Formation $formation): static
+    // {
+    //     if (!$this->formations->contains($formation)) {
+    //         $this->formations->add($formation);
+    //         $formation->setUser($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeFormation(Formation $formation): static
+    // {
+    //     if ($this->formations->removeElement($formation)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($formation->getUser() === $this) {
+    //             $formation->setUser(null);
+    //         }
+    //     }
+
+    //     return $this;
+    // }
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+
+    /**
+     * @return Collection<int, Candidature>
+     */
+    public function getCandidatures(): Collection
     {
-        return $this->user;
+        return $this->candidatures;
     }
 
-    public function setUser(?Formation $user): static
+    public function addCandidature(Candidature $candidature): static
     {
-        $this->user = $user;
+        if (!$this->candidatures->contains($candidature)) {
+            $this->candidatures->add($candidature);
+            $candidature->setUser($this);
+        }
 
         return $this;
     }
+
+    public function removeCandidature(Candidature $candidature): static
+    {
+        if ($this->candidatures->removeElement($candidature)) {
+            // set the owning side to null (unless already changed)
+            if ($candidature->getUser() === $this) {
+                $candidature->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+   
+
+   
+
+   
+ 
 }
