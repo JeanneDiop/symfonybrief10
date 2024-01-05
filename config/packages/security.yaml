@@ -37,5 +37,6 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS  }
         - { path: ^/api/register, roles: PUBLIC_ACCESS  }
         - { path: ^/api/formation/store, roles: ['ROLE_ADMIN'] }
-        - { path: ^/api/formation/list, roles: PUBLIC_ACCESS }           
-        - { path: ^/api/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/formation/list, roles: PUBLIC_ACCESS }     
+        - { path: ^/api/candidature/store, roles: PUBLIC_ACCESS }          
+        # - { path: ^/api/,       roles: IS_AUTHENTICATED_FULLY }
